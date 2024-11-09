@@ -45,6 +45,23 @@ class _HomePageState extends State<HomePage> {
   // Fungsi untuk membuka dialog input total uang
   void _inputTotalUang() {
     final TextEditingController _uangController = TextEditingController();
+    bool _isEditingAmount = false;
+
+    // Listener untuk mengubah format input saat mengetik
+    _uangController.addListener(() {
+      if (_isEditingAmount) return;
+      setState(() => _isEditingAmount = true);
+
+      final text = _uangController.text.replaceAll(RegExp(r'[^0-9]'), '');
+      final amount = double.tryParse(text) ?? 0.0;
+
+      _uangController.value = _uangController.value.copyWith(
+        text: _currencyFormatter.format(amount),
+        selection: TextSelection.collapsed(offset: _currencyFormatter.format(amount).length),
+      );
+
+      setState(() => _isEditingAmount = false);
+    });
 
     showDialog(
       context: context,
@@ -56,7 +73,6 @@ class _HomePageState extends State<HomePage> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: 'Total Uang',
-              prefixText: 'Rp ',
             ),
           ),
           actions: [
@@ -68,7 +84,17 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () {
-                final inputAmount = double.tryParse(_uangController.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
+                final inputText = _uangController.text.replaceAll(RegExp(r'[^0-9]'), '');
+                final inputAmount = double.tryParse(inputText) ?? 0.0;
+
+                if (inputText.isEmpty || inputAmount <= 0) {
+                  // Validasi jika input kosong atau kurang dari atau sama dengan 0
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Masukkan total uang yang valid')),
+                  );
+                  return;
+                }
+
                 setState(() {
                   totalUang = inputAmount;
                 });
