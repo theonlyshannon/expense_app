@@ -71,7 +71,7 @@ class _InputExpensePageState extends State<InputExpensePage> {
         ..title = title
         ..amount = amount
         ..category = category
-        ..date = _selectedDate;
+        ..date = _selectedDate; // Tanggal tetap disimpan, jika diperlukan
 
       if (widget.expense == null) {
         _repository.addExpense(expense);
@@ -79,21 +79,6 @@ class _InputExpensePageState extends State<InputExpensePage> {
         _repository.updateExpense(widget.index!, expense);
       }
       Navigator.pop(context);
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      locale: const Locale("id", "ID"),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
     }
   }
 
@@ -173,26 +158,6 @@ class _InputExpensePageState extends State<InputExpensePage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  // Input untuk Tanggal Pengeluaran
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'Tanggal',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    subtitle: Text(
-                      "${_selectedDate.toLocal()}".split(' ')[0],
-                      style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () => _selectDate(context),
                     ),
                   ),
                   const SizedBox(height: 24.0),
